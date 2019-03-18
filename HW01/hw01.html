@@ -8,21 +8,20 @@
 
 </style>
 </head>
-
+<h1>Homework01 (<a href="https://jsfiddle.net/iristang85/zn21t76b">jsfiddle)</a></h1>
 <body> 
 
 <div>
   <img src="https://imgur.com/PMVBPXb.png" 
-  style="position:absolute;top:0vw;left:0vw;width:70vw;z-index:-1">
+  style="position:absolute;top:5vw;left:0vw;width:70vw;z-index:-1">
 </div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <p id='status'>Light is off</p>
 <button id="toggle">
 ON
 </button>
-
-
 <script>
+
 var status = false;
 var color_num=0;
  $('#toggle').click ( function() {
@@ -44,7 +43,7 @@ class Light {
     this.element.id = 'light';
     // set element style attribute
     //https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style
-    this.element.style.cssText = "position:absolute;width:20px;height:20px;border-radius:50px;z-index:1"; 
+    this.element.style.cssText = "position:absolute;width:30px;height:30px;border-radius:50px;z-index:1"; 
 	  this.element.style.top = t;
     this.element.style.left = l;
     // CSS color property: https://www.w3schools.com/cssref/pr_text_color.asp
@@ -74,24 +73,26 @@ class Light {
 init();
 
 function init() {
-  var light1 = new Light('14.5vw','32.6vw');
+  var light1 = new Light('19.5vw','32.6vw');
   light1.changeColor();
-  var light2 = new Light('22vw','20vw');
+  var light2 = new Light('27vw','20vw');
   light2.changeColor();  
-  var light3 = new Light('23.5vw','41.1vw');
+  var light3 = new Light('28.5vw','41.1vw');
   light3.changeColor();  
-  var light4 = new Light('27.8vw','24.8vw');
+  var light4 = new Light('31.8vw','24.8vw');
   light4.changeColor();  
-  var light5 = new Light('33.3vw','35.2vw');
+  var light5 = new Light('38.3vw','35.2vw');
   light5.changeColor(); 
-  var light6 = new Light('36.5vw','23.2vw');
+  var light6 = new Light('41.5vw','23.2vw');
   light6.changeColor();  
-  var light7 = new Light('42.5vw','14.1vw');
+  var light7 = new Light('47.5vw','14.1vw');
   light7.changeColor();  
-  var light8 = new Light('42vw','42.8vw');
+  var light8 = new Light('47vw','42.8vw');
   light8.changeColor(); 
   
 }
+
+
 
 
 
