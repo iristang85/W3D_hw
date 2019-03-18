@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<style>
+
+
+</style>
+</head>
+
+<body> 
+
+<div>
+  <img src="https://imgur.com/PMVBPXb.png" 
+  style="position:absolute;top:0vw;left:0vw;width:70vw;z-index:-1">
+</div>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<p id='status'>Light is off</p>
+<button id="toggle">
+ON
+</button>
+
+
+<script>
+var status = false;
+var color_num=0;
+ $('#toggle').click ( function() {
+	status = !status;
+  if (status === true) {
+  	$('#status').text('Light is on')
+  	$('#toggle').text ('OFF');  
+  } else {
+ 	 $('#status').text('Light is off')
+  	$('#toggle').text ('ON');  
+  }
+});
+class Light {
+  constructor(t,l) {  
+  	// create/append div dynamically
+    // https://stackoverflow.com/questions/14004117/create-div-and-append-div-dynamically
+    this.element = document.createElement ('div');
+    //this = iDiv;
+    this.element.id = 'light';
+    // set element style attribute
+    //https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/style
+    this.element.style.cssText = "position:absolute;width:20px;height:20px;border-radius:50px;z-index:1"; 
+	  this.element.style.top = t;
+    this.element.style.left = l;
+    // CSS color property: https://www.w3schools.com/cssref/pr_text_color.asp
+    // hsl: https://www.w3schools.com/colors/colors_hsl.asp
+    this.element.style.background = "hsl(0, 0%, 75%)";
+    document.getElementsByTagName('body')[0].appendChild(this.element);
+  }
+
+	changeColor() {
+  	// https://stackoverflow.com/questions/45147661/javascript-recursion-within-a-class/45147713
+    
+    var self = this;
+  	var hue = Math.random()*300;
+    setTimeout (function() { self.changeColor() } , 500);
+    if(status==false){
+    self.element.style.background="hsl(0, 0%, 75%)";  
+    }
+    else{
+    self.element.style.background = "hsl(" + hue + ", 70%, 51%)";   
+   }
+		// setTimeout ( self.changeColor , 1000);  // why this is not working ...
+  }
+
+}
+
+////////////////////////////////
+init();
+
+function init() {
+  var light1 = new Light('14.5vw','32.6vw');
+  light1.changeColor();
+  var light2 = new Light('22vw','20vw');
+  light2.changeColor();  
+  var light3 = new Light('23.5vw','41.1vw');
+  light3.changeColor();  
+  var light4 = new Light('27.8vw','24.8vw');
+  light4.changeColor();  
+  var light5 = new Light('33.3vw','35.2vw');
+  light5.changeColor(); 
+  var light6 = new Light('36.5vw','23.2vw');
+  light6.changeColor();  
+  var light7 = new Light('42.5vw','14.1vw');
+  light7.changeColor();  
+  var light8 = new Light('42vw','42.8vw');
+  light8.changeColor(); 
+  
+}
+
+
+
+</script>
+</body>
+
+</html>
