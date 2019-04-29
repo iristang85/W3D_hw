@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<style>
+
+#container {
+  width: 100vw;
+  height: 40vw;
+  float: left;
+  background-color: yellow;
+  margin: 10px;
+}
+
+p {
+  margin: 10px;
+  text-align: justify;
+}
+
+
+
+</style>
+</head>
+(<a href="https://jsfiddle.net/iristang85/mjvfz4h1/">jsfiddle)</a>
+<body> 
+
+<h1 style="font-size:2em; text-align:center; margin:15px"> 
+Disney特展_Hw3
+</h1>
+<hr>
+<div id="container">
+<!--canvas id='mycanvas'></canvas-->
+</div>
+<p id="Intro">點選畫作</p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/84/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<script>
+var useCamera1 = false;
+var mouse = new THREE.Vector2();
+var raycaster = new THREE.Raycaster();
+var pickables=[];
+
+function toggleCamera() {
+  useCamera1 = !useCamera1;
+}
+
+var scene, renderer, camera;
+var camera1;
+
+init();
+animate();
+
+function init() {
+  scene = new THREE.Scene();
+   renderer = new THREE.WebGLRenderer({
+    antialias: true
+  });
+  var ww = $('#container').innerWidth();
+  var hh = $('#container').innerHeight();
+  renderer.setSize(ww, hh);
+  renderer.setClearColor(0x555555);
+  $('#container').append(renderer.domElement);
+
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(45, ww / hh, 1, 10000);
+  camera.position.x = -30;
+  camera.position.y = 100;
+  camera.position.z = 200;
+
+	let controls = new THREE.OrbitControls(camera,renderer.domElement);
+	window.addEventListener('resize', onWindowResize, false);
+ // $('#container').on ("mousemove", onDocumentMouseMove);
+  window.addEventListener('mousedown', onDocumentMouseDown, false);
+  //////////////////////////////////////////////////////////////////////////////
+
+ let wall = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 300), new THREE.MeshPhongMaterial()) //左
+  scene.add(wall);
+  wall.position.set(-145,30,0);
+  wall = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 300), new THREE.MeshPhongMaterial())  //右
+  scene.add(wall);
+  wall.position.set(145,30,0);
+    wall = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 300), new THREE.MeshPhongMaterial())   //後
+  scene.add(wall);
+  wall.position.set(0,30,-145);
+  wall.rotation.y=-Math.PI / 2;
+   wall = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 300), new THREE.MeshPhongMaterial())   //前
+  scene.add(wall);
+  wall.position.set(0,30,145);
+  wall.rotation.y=-Math.PI / 2;
+    wall = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 100), new THREE.MeshPhongMaterial())   //中間
+  scene.add(wall);
+  wall.position.set(100,30,-50);
+  wall.rotation.y=-Math.PI / 2;
+    wall = new THREE.Mesh(new THREE.BoxGeometry(10, 60, 100), new THREE.MeshPhongMaterial())  //中間
+  scene.add(wall);
+  wall.position.set(-100,30,30);
+  wall.rotation.y=-Math.PI / 2;
+
+  let loader = new THREE.TextureLoader();
+  loader.crossOrigin = '';
+  texture = loader.load('https://i.imgur.com/DrvlmNW.jpg?1');
+  texture.repeat.set (3,3);
+  texture.wrapS = texture.wrapT = true;
+
+  let floor = new THREE.Mesh(new THREE.PlaneGeometry(300, 300), new THREE.MeshPhongMaterial({
+    side: THREE.DoubleSide,
+    map: texture
+  }))
+  scene.add(floor)
+  floor.rotation.x = -Math.PI / 2
+
+  camera1 = new THREE.PerspectiveCamera(60, 1, 1, 1000);
+  camera1.position.set(-100, 160, 0);
+  camera1.lookAt(new THREE.Vector3(0, 60, 0));
+  
+  /////////////////////////////////////////
+ 
+  let frame = new THREE.Mesh(new THREE.BoxGeometry(36, 38, 3), new THREE.MeshPhongMaterial({color:0x00000}));
+  scene.add(frame);
+  frame.position.set(-100,30,35);
+  tex = loader.load ("https://i.imgur.com/3Q4ofCk.jpg");
+	let painting = new THREE.Mesh (new THREE.PlaneGeometry(30,32), new THREE.MeshBasicMaterial({map: tex}));
+  scene.add (painting);
+  painting.position.set(-100,30,37);	
+  painting.name = 'Mickey/米老鼠';
+  painting.intro='米老鼠一隻擬人化的黑色老鼠，擁有一對圓形的耳朵，且通常穿著紅色短褲、黃色大鞋和白色手套《有５隻手指頭》。米老鼠不時會與其女朋友米妮老鼠、寵物狗布魯托，以及唐老鴨和高飛一起出現。他的敵人皮特時不時出現。';
+ 
+  frame = new THREE.Mesh(new THREE.BoxGeometry(36, 38, 3), new THREE.MeshPhongMaterial({color:0x00000}));
+  scene.add(frame);
+  frame.position.set(100,30,-45);
+  tex = loader.load ("https://i.imgur.com/qXLcQYv.jpg");
+	let painting2 = new THREE.Mesh (new THREE.PlaneGeometry(30,32), new THREE.MeshBasicMaterial({map: tex}));
+  scene.add (painting2);
+  painting2.position.set(100,30,-43);	
+  painting2.name = 'Minnie/米妮';
+  painting2.intro='米妮是米奇的女朋友和最好的夥伴，也是迪士尼里最美麗可愛的女角色。雖然米妮平時很安靜，甚至經常害羞，但是當她遇到壞蛋，特別是要謀害米奇的那些壞蛋的時候，她毫不手軟，並且具備打擊這些壞蛋的能力。米妮最好的朋友就是黛絲，她們經常在一起逛街，還有就是談論米奇和唐老鴨，與黛絲相比，更加襯託了米妮的溫柔與智慧。總的來說，米妮就是迪士尼設定的人們心中完美的女孩，聰明、溫柔、安靜、可愛而美麗。';
+  
+  frame = new THREE.Mesh(new THREE.BoxGeometry(36, 38, 3), new THREE.MeshPhongMaterial({color:0x00000}));
+  scene.add(frame);
+  frame.position.set(-140,30,-45);
+  frame.rotation.y = Math.PI/2;
+  tex = loader.load ("https://i.imgur.com/LoyaRup.jpg");
+  let painting3 = new THREE.Mesh (new THREE.PlaneGeometry(30,32), new THREE.MeshBasicMaterial({map: tex}));
+  scene.add (painting3);
+  painting3.position.set(-138,30,-45);	
+  painting3.rotation.y = Math.PI/2;
+  painting3.name = 'Stitch/史迪奇';
+  painting3.intro="故事開始於強霸博士（Dr. Jumba Jookiba）的實驗，它製造了626個非法的基因實驗生物，因而遭到監禁。當強霸所製造的實驗生物正透過鋼圖艦長（Captain Gantu）運送到一個廢棄的星球時，626號實驗，一個外貌類似狗的生物逃離至了外太空，並前往地球。星際議長（The Grand Councilwoman）知道後，就派出了強霸博士和獨眼霹靂（Agent Pleakley）一起合作，前往地球捕捉626。626在太空船逃離的過程中墜落在夏威夷，雖然存活下來但是卻被一台卡車輾過而失去意識，於是被誤認為一種狗，送到了一家寵物店。";
+  
+  frame = new THREE.Mesh(new THREE.BoxGeometry(36, 38, 3), new THREE.MeshPhongMaterial({color:0x00000}));
+  scene.add(frame);
+  frame.position.set(-50,30,-140);
+  tex = loader.load ("https://i.imgur.com/V6003iX.jpg");
+	let painting4 = new THREE.Mesh (new THREE.PlaneGeometry(30,32), new THREE.MeshBasicMaterial({map: tex}));
+  scene.add (painting4);
+  painting4.position.set(-50,30,-138);	
+  painting4.name = 'Daisy/黛絲';
+  painting4.intro='黛絲是唐老鴨的女朋友，生日5月16日。和唐老鴨一樣，黛絲也是一隻擬人化的白鴨，但是睫毛較長，尾部羽毛也更長，顯示出裙子的樣子。她常常戴有蝴蝶結，身著罩衫，腳蹬高跟鞋。黛絲雖然跟唐老鴨一樣有著暴躁的脾氣，但是她更懂得控制與收斂，同時表現得比唐老鴨更加世故一些。此外，黛絲熱愛成為眾人焦點，比起好友米妮顯得更為嫵媚，同時也比較喜歡喋喋不休。 她是米妮最好的朋友，同時也與母牛克拉貝兒交情甚佳。';
+  
+    frame = new THREE.Mesh(new THREE.BoxGeometry(36, 38, 3), new THREE.MeshPhongMaterial({color:0x00000}));
+  scene.add(frame);
+  frame.position.set(135,30,45);
+  frame.rotation.y = -Math.PI/2;
+  tex = loader.load ("https://i.imgur.com/bjP93yN.jpg");
+	let painting5 = new THREE.Mesh (new THREE.PlaneGeometry(30,32), new THREE.MeshBasicMaterial({map: tex}));
+  scene.add (painting5);
+  painting5.position.set(133,30,45);
+  painting5.rotation.y = -Math.PI/2;
+  painting5.name = 'Pluto/布魯托';
+  painting5.intro='布魯托是一隻土黃色的狗，性別為雄性。一般是作為米老鼠的寵物出現，但也曾經作為唐老鴨或高飛狗的寵物，在一些短篇故事中則作為主角。首次出現於1930年。名字源自冥王星（Pluto）所定立的。';
+  
+  frame = new THREE.Mesh(new THREE.BoxGeometry(36, 38, 3), new THREE.MeshPhongMaterial({color:0x00000}));
+  scene.add(frame);
+  frame.position.set(50,30,-140);
+  tex = loader.load ("https://i.imgur.com/5ZKTF24.jpg");
+	let painting6 = new THREE.Mesh (new THREE.PlaneGeometry(30,32), new THREE.MeshBasicMaterial({map: tex}));
+  scene.add (painting6);
+  painting6.position.set(50,30,-138);	
+  painting6.name = 'Donald/唐老鴨';
+  painting6.intro='唐老鴨是黛絲的男朋友，1934年6月9日。有橙黃色的嘴、腳和蹼，品種為北京鴨，身上穿的是Fauntleroy水手裝，但卻沒有穿褲子，愛吃胡蘿蔔。';
+
+  pickables.push (painting,painting2,painting3,painting4,painting5,painting6);
+
+  /////////////////////////////////////////
+  light = new THREE.PointLight(0xffffff, 1,270);
+  light.position.set(-80, 150, -100);
+  scene.add(light);
+
+  light2 = new THREE.PointLight(0xffffff, 1,270);
+  light2.position.set(80, 150, 100);
+  scene.add(light2);
+  
+  light3 = new THREE.PointLight(0xffffff, 1,270);
+  light3.position.set(-80, 150, 100);
+  scene.add(light3);
+
+  light4 = new THREE.PointLight(0xffffff, 1,270);
+  light4.position.set(80, 150, -100);
+  scene.add(light4);
+  
+/* //lighthelp
+	var sphereSize = 10;
+  var pointLightHelper = new THREE.PointLightHelper(light, sphereSize);
+  scene.add(pointLightHelper);
+*/
+/////////////////////////////////////////
+	let sit
+  sit = new THREE.Mesh(new THREE.BoxGeometry(5, 20, 60), new THREE.MeshPhongMaterial({color:0x00000}))
+sit.position.set(-80,10,130)
+sit.rotation.set(-Math.PI / 2,-Math.PI / 2,0)
+  scene.add(sit);
+    sit = new THREE.Mesh(new THREE.BoxGeometry(5, 12, 20), new THREE.MeshPhongMaterial({color:0x00000}))
+sit.position.set(-110,7,130)
+  scene.add(sit);
+ sit = new THREE.Mesh(new THREE.BoxGeometry(5, 12, 20), new THREE.MeshPhongMaterial({color:0x00000}))
+sit.position.set(-50,7,130)
+  scene.add(sit);
+   sit = new THREE.Mesh(new THREE.BoxGeometry(5, 20, 60), new THREE.MeshPhongMaterial({color:0x00000}))
+sit.position.set(80,10,130)
+sit.rotation.set(-Math.PI / 2,-Math.PI / 2,0)
+  scene.add(sit);
+    sit = new THREE.Mesh(new THREE.BoxGeometry(5, 12, 20), new THREE.MeshPhongMaterial({color:0x00000}))
+sit.position.set(110,7,130)
+  scene.add(sit);
+ sit = new THREE.Mesh(new THREE.BoxGeometry(5, 12, 20), new THREE.MeshPhongMaterial({color:0x00000}))
+sit.position.set(50,7,130)
+  scene.add(sit);
+
+}
+
+function onWindowResize() {
+  var ww = $('#container').innerWidth();
+  var hh = $('#container').innerHeight();
+  camera.aspect = ww / hh;
+  camera.updateProjectionMatrix();
+  renderer.setSize(ww, hh);
+}
+
+function onDocumentMouseDown(event) {
+  
+  var viewportPos =$('#container').get(0).getBoundingClientRect(); 
+	mouse.x = ((event.clientX - viewportPos.left) / $('#container').innerWidth()) * 2 - 1;
+  mouse.y = -((event.clientY - viewportPos.top) / $('#container').innerHeight()) * 2 + 1;
+
+	raycaster.setFromCamera(mouse, camera);
+  var intersects = raycaster.intersectObjects (pickables);
+   var OriginalFont=document.getElementById("Intro").innerHTML;
+  if (intersects.length > 0) {
+    //alert (intersects[0].object.name + " is picked!")
+   document.getElementById("Intro").innerHTML="展品名稱："+intersects[0].object.name+'<br>'+"展品說明："+intersects[0].object.intro;
+  }
+  
+
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  //let nowCamera = useCamera1 ? camera1 : camera;
+  render();
+}
+
+function render() {
+  renderer.render(scene, camera);
+}
+
+
+
+</script>
+</body>
+
+</html>
